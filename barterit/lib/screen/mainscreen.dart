@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:barterit/screen/profiletabscreen.dart';
+import 'package:barterit/screen/sellertabscreen.dart';
 
 import '../../models/user.dart';
 import 'buyertabscreen.dart';
@@ -29,6 +30,7 @@ class _MainScreenState extends State<MainScreen> {
       BuyerTabScreen(
         user: widget.user,
       ),
+      SellerTabScreen(user: widget.user),
       ProfileTabScreen(user: widget.user),
     ];
   }
@@ -56,6 +58,11 @@ class _MainScreenState extends State<MainScreen> {
                 label: "Buyer"),
             BottomNavigationBarItem(
                 icon: Icon(
+                  Icons.store_mall_directory,
+                ),
+                label: "Seller"),    
+            BottomNavigationBarItem(
+                icon: Icon(
                   Icons.person,
                 ),
                 label: "Profile"),
@@ -70,6 +77,9 @@ class _MainScreenState extends State<MainScreen> {
         maintitle = "Buyer";
       }
       if (_currentIndex == 1) {
+        maintitle = "Seller";
+      }
+      if (_currentIndex == 2) {
         maintitle = "Profile";
       }
     });
