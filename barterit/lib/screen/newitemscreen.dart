@@ -406,7 +406,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
           "images": jsonEncode(base64Images),
         }).then((response) {
       print(response.body);
-      if (response.statusCode == 200) {
+       if (response.statusCode == 200) {
         var responseBody = response.body;
         if (responseBody.startsWith('success')) {
           responseBody = responseBody.substring(7);

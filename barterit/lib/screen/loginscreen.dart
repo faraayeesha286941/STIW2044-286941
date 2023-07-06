@@ -190,13 +190,13 @@ class _LoginScreenState extends State<LoginScreen> {
             "pass": pass,
           }).then((response) {
         print(response.body);
-        if (response.statusCode == 200) {
-          var responseBody = response.body;
+         if (response.statusCode == 200) {
+        var responseBody = response.body;
         if (responseBody.startsWith('success')) {
           responseBody = responseBody.substring(7);
         }
         var jsondata = jsonDecode(responseBody);
-          if (jsondata['status'] == 'success') {
+        if (jsondata['status'] == 'success') {
             User user = User.fromJson(jsondata['data']);
             print(user.name);
             print(user.email);

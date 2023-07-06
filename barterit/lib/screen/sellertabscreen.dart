@@ -165,13 +165,13 @@ class _SellerTabScreenState extends State<SellerTabScreen> {
       //print(response.body);
       log(response.body);
       itemList.clear();
-      if (response.statusCode == 200) {
+       if (response.statusCode == 200) {
         var responseBody = response.body;
         if (responseBody.startsWith('success')) {
           responseBody = responseBody.substring(7);
         }
         var jsondata = jsonDecode(responseBody);
-        if (jsondata['status'] == "success") {
+        if (jsondata['status'] == 'success') {
           var extractdata = jsondata['data'];
           extractdata['items'].forEach((v) {
             itemList.add(Item.fromJson(v));
@@ -228,9 +228,13 @@ class _SellerTabScreenState extends State<SellerTabScreen> {
         }).then((response) {
       print(response.body);
       //itemList.clear();
-      if (response.statusCode == 200) {
-        var jsondata = jsonDecode(response.body);
-        if (jsondata['status'] == "success") {
+       if (response.statusCode == 200) {
+        var responseBody = response.body;
+        if (responseBody.startsWith('success')) {
+          responseBody = responseBody.substring(7);
+        }
+        var jsondata = jsonDecode(responseBody);
+        if (jsondata['status'] == 'success') {
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text("Delete Success")));
           loadsellerItems();

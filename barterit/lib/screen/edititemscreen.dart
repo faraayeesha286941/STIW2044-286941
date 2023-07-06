@@ -90,15 +90,12 @@ class _EditItemScreenState extends State<EditItemScreen> {
                 child: SizedBox(
                   width: screenWidth,
                   child: CachedNetworkImage(
-                    width: screenWidth,
-                    fit: BoxFit.cover,
-                    imageUrl:
-                        "${MyConfig().SERVER}/barterit/assets/images/${widget.useritem.itemId}.png",
-                    placeholder: (context, url) =>
-                        const LinearProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
+  width: screenWidth,
+  fit: BoxFit.cover,
+  imageUrl: generateImageUrl(),
+  placeholder: (context, url) => const LinearProgressIndicator(),
+  errorWidget: (context, url, error) => const Icon(Icons.error),
+),
                 ),
               ),
             )),
@@ -278,6 +275,16 @@ class _EditItemScreenState extends State<EditItemScreen> {
     );
   }
 
+  String generateImageUrl() {
+  List<String> imageUrls = [];
+  for (var index = 1; index <= 3; index++) {
+    String imageUrl = "${MyConfig().SERVER}/barterit/assets/images/${widget.useritem.itemId}_$index.png";
+    imageUrls.add(imageUrl);
+  }
+  // Return the first image URL by default
+  return imageUrls.isNotEmpty ? imageUrls[0] : "";
+}
+
   void udpateDialog() {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context)
@@ -339,8 +346,12 @@ class _EditItemScreenState extends State<EditItemScreen> {
           "type": selectedType,
         }).then((response) {
       print(response.body);
-      if (response.statusCode == 200) {
-        var jsondata = jsonDecode(response.body);
+       if (response.statusCode == 200) {
+        var responseBody = response.body;
+        if (responseBody.startsWith('success')) {
+          responseBody = responseBody.substring(7);
+        }
+        var jsondata = jsonDecode(responseBody);
         if (jsondata['status'] == 'success') {
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text("Update Success")));
