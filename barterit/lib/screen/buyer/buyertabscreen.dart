@@ -6,10 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:barterit/models/item.dart';
 import 'package:barterit/models/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:barterit/myconfig.dart';
+import 'package:barterit/appconfig/myconfig.dart';
 
 import 'buyercartscreen.dart';
 import 'buyerdetailscreen.dart';
+import 'buyerorderscreen.dart';
 
 //for buyer screen
 
@@ -28,6 +29,7 @@ class _BuyerTabScreenState extends State<BuyerTabScreen> {
   late int axiscount = 2;
   int numofpage = 1, curpage = 1;
   int numberofresult = 0;
+  // ignore: prefer_typing_uninitialized_variables
   var color;
   int cartqty = 0;
 
@@ -35,14 +37,12 @@ class _BuyerTabScreenState extends State<BuyerTabScreen> {
   @override
   void initState() {
     super.initState();
-    loadItem(1);
-    print("Buyer");
+    loadItems();
   }
 
   @override
   void dispose() {
     super.dispose();
-    print("dispose");
   }
 
   @override
@@ -66,22 +66,25 @@ class _BuyerTabScreenState extends State<BuyerTabScreen> {
           TextButton.icon(
             icon: const Icon(
               Icons.shopping_cart,
-            ), // Your icon here
+            ),
+
+            // Your icon here
             label: Text(cartqty.toString()), // Your text here
-            onPressed: () {
+            onPressed: () async {
               if (cartqty > 0) {
-                Navigator.push(
+                await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (content) => BuyerCartScreen(
                               user: widget.user,
                             )));
-              }else{
-                 ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("No item in cart")));
+                loadItems();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("No item in cart")));
               }
             },
-          )
+          ),
           // Stack(
           //   alignment: Alignment.topRight,
           //   children: [
@@ -105,6 +108,36 @@ class _BuyerTabScreenState extends State<BuyerTabScreen> {
           //       Icons.shopping_cart,
           //     )),
           // Text(cartqty.toString()),
+          PopupMenuButton(
+              // add icon, by default "3 dot" icon
+              // icon: Icon(Icons.book)
+              itemBuilder: (context) {
+            return [
+              const PopupMenuItem<int>(
+                value: 0,
+                child: Text("My Order"),
+              ),
+              const PopupMenuItem<int>(
+                value: 1,
+                child: Text("New"),
+              ),
+            ];
+          }, onSelected: (value) async {
+            if (value == 0) {
+              if (widget.user.id.toString() == "na") {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Please login/register an account")));
+                return;
+              }
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (content) => BuyerOrderScreen(
+                            user: widget.user,
+                          )));
+            } else if (value == 1) {
+            } else if (value == 2) {}
+          }),
         ],
       ),
       body: itemList.isEmpty
@@ -117,62 +150,63 @@ class _BuyerTabScreenState extends State<BuyerTabScreen> {
                 color: Theme.of(context).colorScheme.primary,
                 alignment: Alignment.center,
                 child: Text(
-                  "$numberofresult Item Found",
+                  "$numberofresult Items Found",
                   style: const TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
               Expanded(
-                  child: GridView.count(
-                      crossAxisCount: axiscount,
-                      children: List.generate(
-                        itemList.length,
-                        (index) {
-                          return Card(
-                            child: InkWell(
-                              onTap: () async {
-                                Item useritem =
-                                    Item.fromJson(itemList[index].toJson());
-                                await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (content) =>
-                                            BuyerDetailsScreen(
-                                              user: widget.user,
-                                              useritem: useritem,
-                                            )));
-                                loadItem(1);
-                              },
-                              child: Column(children: [
-                                CachedNetworkImage(
-                                  width: screenWidth,
-                                  fit: BoxFit.cover,
-                                  imageUrl:
-                                      "${MyConfig().SERVER}/barterit/assets/images/${itemList[index].itemId}_1.png",
-                                  placeholder: (context, url) =>
-                                      const LinearProgressIndicator(),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
-                                ),
-                                Text(
-                                  itemList[index].itemName.toString(),
-                                  style: const TextStyle(fontSize: 20),
-                                ),
-                                Text(
-                                  "RM ${double.parse(itemList[index].itemPrice.toString()).toStringAsFixed(2)}",
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                                Text(
-                                  "${itemList[index].itemQty} available",
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              ]),
-                            ),
-                          );
-                        },
-                      ))),
+      child: GridView.count(
+        crossAxisCount: axiscount,
+        children: List.generate(
+          itemList.length,
+          (index) {
+            return Card(
+              child: InkWell(
+                onTap: () async {
+                  Item useritem =
+                      Item.fromJson(itemList[index].toJson());
+                  await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (content) =>
+                              BuyerDetailsScreen(
+                                user: widget.user,
+                                useritem: useritem,
+                                page: curpage,
+                              )));
+                  loadItems();
+                },
+                child: Column(children: [
+                  CachedNetworkImage(
+                    width: screenWidth,
+                    fit: BoxFit.cover,
+                    imageUrl:
+                        "${MyConfig().SERVER}/barterit/assets/images/${itemList[index].itemId}_1.png",
+                    placeholder: (context, url) =>
+                        const LinearProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
+                  Text(
+                    itemList[index].itemName.toString(),
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                  Text(
+                    "RM ${double.parse(itemList[index].itemPrice.toString()).toStringAsFixed(2)}",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  Text(
+                    "${itemList[index].itemQty} available",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ]),
+              ),
+            );
+          },
+        ))),
               SizedBox(
-                height: 50,
-                child: ListView.builder(
+      height: 50,
+      child: ListView.builder(
                   shrinkWrap: true,
                   itemCount: numofpage,
                   scrollDirection: Axis.horizontal,
@@ -187,7 +221,7 @@ class _BuyerTabScreenState extends State<BuyerTabScreen> {
                     return TextButton(
                         onPressed: () {
                           curpage = index + 1;
-                          loadItem(index + 1);
+                          loadItems();
                         },
                         child: Text(
                           (index + 1).toString(),
@@ -200,39 +234,34 @@ class _BuyerTabScreenState extends State<BuyerTabScreen> {
     );
   }
 
- void loadItem(int pg) {
-  http.post(Uri.parse("${MyConfig().SERVER}/barterit/php/load_items.php"),
-      body: {
-        "cartuserid": widget.user.id,
-        "pageno": pg.toString()
-      }).then((response) {
-    //print(response.body);
-    log(response.body);
-    itemList.clear();
-    if (response.statusCode == 200) {
-      var responseBody = response.body;
-      if (responseBody.startsWith('success')) {
-        responseBody = responseBody.substring(7);
-      }
-      var jsondata = jsonDecode(responseBody);
-      if (jsondata['status'] == 'success') {
-        numofpage = int.parse(jsondata['numofpage']); //get number of pages
-        numberofresult = int.parse(jsondata['numberofresult']);
-        print(numberofresult);
-        var extractdata = jsondata['data'];
-        cartqty = int.parse(jsondata['cartqty'].toString());
-        print(cartqty);
-        if (extractdata['items'] != null) {
+  void loadItems() {
+    http.post(Uri.parse("${MyConfig().SERVER}/barterit/php/load_items.php"),
+        body: {
+          "cartuserid": widget.user.id,
+          "pageno": curpage.toString()
+        }).then((response) {
+      //print(response.body);
+      //log(response.body);
+      itemList.clear();
+      if (response.statusCode == 200) {
+        var responseBody = response.body;
+        if (responseBody.startsWith('success')) {
+          responseBody = responseBody.substring(7);
+        }
+        var jsondata = jsonDecode(responseBody);
+        if (jsondata['status'] == 'success') {
+          numofpage = int.parse(jsondata['numofpage']); //get number of pages
+          numberofresult = int.parse(jsondata['numberofresult']);
+          var extractdata = jsondata['data'];
+          cartqty = int.parse(jsondata['cartqty'].toString());
           extractdata['items'].forEach((v) {
             itemList.add(Item.fromJson(v));
           });
-          print(itemList[0].itemName);
         }
+        setState(() {});
       }
-      setState(() {});
-    }
-  });
-}
+    });
+  }
 
   void showsearchDialog() {
     showDialog(
@@ -282,28 +311,28 @@ class _BuyerTabScreenState extends State<BuyerTabScreen> {
   }
 
   void searchItem(String search) {
-  http.post(Uri.parse("${MyConfig().SERVER}/barterit/php/load_items.php"), body: {
-    "cartuserid": widget.user.id,
-    "search": search
-  }).then((response) {
-    log(response.body);
-    itemList.clear();
-    if (response.statusCode == 200) {
-      var responseBody = response.body;
-      if (responseBody.startsWith('success')) {
-        responseBody = responseBody.substring(7);
-      }
-      var jsondata = jsonDecode(responseBody);
-      if (jsondata['status'] == 'success') {
-        var extractdata = jsondata['data'];
-        if (extractdata != null && extractdata['items'] != null) {
+    http.post(Uri.parse("${MyConfig().SERVER}/barterit/php/load_items.php"),
+        body: {
+          "cartuserid": widget.user.id,
+          "search": search
+        }).then((response) {
+      //print(response.body);
+      log(response.body);
+      itemList.clear();
+      if (response.statusCode == 200) {
+        var responseBody = response.body;
+        if (responseBody.startsWith('success')) {
+          responseBody = responseBody.substring(7);
+        }
+        var jsondata = jsonDecode(responseBody);
+        if (jsondata['status'] == 'success') {
+          var extractdata = jsondata['data'];
           extractdata['items'].forEach((v) {
             itemList.add(Item.fromJson(v));
           });
         }
+        setState(() {});
       }
-      setState(() {}); // Update the UI with search results
-    }
-  });
-}
+    });
+  }
 }

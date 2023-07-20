@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:barterit/screen/profiletabscreen.dart';
-import 'package:barterit/screen/sellertabscreen.dart';
+import 'package:barterit/screen/shared/profiletabscreen.dart';
+import 'package:barterit/screen/seller/sellertabscreen.dart';
 
-import '../../models/user.dart';
-import 'buyertabscreen.dart';
+import '../../../models/user.dart';
+import '../buyer/buyertabscreen.dart';
 
 //for buyer screen
 

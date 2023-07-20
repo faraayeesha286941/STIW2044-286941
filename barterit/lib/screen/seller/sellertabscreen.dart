@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:barterit/models/item.dart';
 import 'package:barterit/models/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:barterit/myconfig.dart';
+import 'package:barterit/appconfig/myconfig.dart';
 import 'edititemscreen.dart';
 import 'newitemscreen.dart';
 

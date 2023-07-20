@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:barterit/myconfig.dart';
-import 'package:barterit/screen/mainscreen.dart';
+import 'package:barterit/appconfig/myconfig.dart';
+import 'package:barterit/screen/shared/mainscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'models/user.dart';
+import '../../models/user.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

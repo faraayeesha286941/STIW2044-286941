@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:barterit/models/cart.dart';
 import 'package:barterit/models/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:barterit/myconfig.dart';
+import 'package:barterit/appconfig/myconfig.dart';
 
 class BuyerCartScreen extends StatefulWidget {
   final User user;
@@ -53,7 +53,7 @@ class _BuyerCartScreenState extends State<BuyerCartScreen> {
                                 width: screenWidth / 3,
                                 fit: BoxFit.cover,
                                 imageUrl:
-                                    "${MyConfig().SERVER}/barterit/assets/items/${cartList[index].itemId}.png",
+                                    "${MyConfig().SERVER}/barterit/assets/images/${cartList[index].itemId}_1.png",
                                 placeholder: (context, url) =>
                                     const LinearProgressIndicator(),
                                 errorWidget: (context, url, error) =>
@@ -94,20 +94,20 @@ class _BuyerCartScreenState extends State<BuyerCartScreen> {
                                 ),
                               ),
                               IconButton(
-                                  onPressed: () {}, icon: Icon(Icons.delete))
+                                  onPressed: () {}, icon: const Icon(Icons.delete))
                             ],
                           ),
                         ));
                       })),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
+            child: SizedBox(
                 height: 70,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Total Price RM " + totalprice.toStringAsFixed(2)),
-                    ElevatedButton(onPressed: () {}, child: Text("Check Out"))
+                    Text("Total Price RM ${totalprice.toStringAsFixed(2)}"),
+                    ElevatedButton(onPressed: () {}, child: const Text("Check Out"))
                   ],
                 )),
           )
@@ -138,10 +138,10 @@ class _BuyerCartScreenState extends State<BuyerCartScreen> {
             //     double.parse(extractdata["carts"]["cart_price"].toString());
           });
 
-          cartList.forEach((element) {
+          for (var element in cartList) {
             totalprice =
                 totalprice + double.parse(element.cartPrice.toString());
-          });
+          }
           //print(itemList[0].itemName);
         }
         setState(() {});

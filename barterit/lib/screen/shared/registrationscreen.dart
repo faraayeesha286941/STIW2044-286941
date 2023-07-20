@@ -2,17 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:barterit/myconfig.dart';
-
-/*class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({super.key});
-
-  @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
-}*/
+import 'package:barterit/appconfig/myconfig.dart';
 
 class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({Key? key}) : super(key: key);
+  const RegistrationScreen({super.key});
 
   @override
   State<RegistrationScreen> createState() => _RegistrationScreenState();
@@ -65,7 +58,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       TextFormField(
                           controller: _nameEditingController,
                           validator: (val) => val!.isEmpty || (val.length < 5)
-                              ? "Name must be longer than 5 letters."
+                              ? "name must be longer than 5"
                               : null,
                           keyboardType: TextInputType.text,
                           decoration: const InputDecoration(
@@ -78,7 +71,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       TextFormField(
                           keyboardType: TextInputType.phone,
                           validator: (val) => val!.isEmpty || (val.length < 10)
-                              ? "Phone must be longer or equal than 10 numbers."
+                              ? "phone must be longer or equal than 10"
                               : null,
                           controller: _phonelditingController,
                           decoration: const InputDecoration(
@@ -93,7 +86,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           validator: (val) => val!.isEmpty ||
                                   !val.contains("@") ||
                                   !val.contains(".")
-                              ? "Please enter a valid email."
+                              ? "enter a valid email"
                               : null,
                           keyboardType: TextInputType.emailAddress,
                           decoration: const InputDecoration(
@@ -106,7 +99,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       TextFormField(
                           controller: _passEditingController,
                           validator: (val) => val!.isEmpty || (val.length < 5)
-                              ? "Password must be longer than 5 characters."
+                              ? "password must be longer than 5"
                               : null,
                           obscureText: true,
                           decoration: const InputDecoration(
@@ -119,7 +112,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       TextFormField(
                           controller: _pass2EditingController,
                           validator: (val) => val!.isEmpty || (val.length < 5)
-                              ? "Password must be longer than 5 characters."
+                              ? "password must be longer than 5"
                               : null,
                           obscureText: true,
                           decoration: const InputDecoration(
@@ -262,16 +255,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     String phone = _phonelditingController.text;
     String passa = _passEditingController.text;
 
-    http
-    .post(Uri.parse("${MyConfig().SERVER}/barterit/php/register_user.php"), body: {
-      "name": name,
-      "email": email,
-      "phone": phone,
-      "password": passa,
-    })
-    .then((response) {
-      print(response.body);
-       if (response.statusCode == 200) {
+    http.post(Uri.parse("${MyConfig().SERVER}/barterit/php/register_user.php"),
+        body: {
+          "name": name,
+          "email": email,
+          "phone": phone,
+          "password": passa,
+        }).then((response) {
+     //  print(response.body);
+      if (response.statusCode == 200) {
         var responseBody = response.body;
         if (responseBody.startsWith('success')) {
           responseBody = responseBody.substring(7);
@@ -279,18 +271,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         var jsondata = jsonDecode(responseBody);
         if (jsondata['status'] == 'success') {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Registration Success")),
-          );
+              const SnackBar(content: Text("Registration Success")));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Registration Failed")),
-          );
+              const SnackBar(content: Text("Registration Failed")));
         }
         Navigator.pop(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Registration Failed")),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Registration Failed")));
         Navigator.pop(context);
       }
     });
